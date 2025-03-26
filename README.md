@@ -1,61 +1,23 @@
-# gh-action-handle-web-changelog-generation
+# gh-action-handle-web-slack-documentation
 
-Handles automatically creating a changelog using AI for web PRs
+Automatically posts a Slack message into the [#web-releases](https://leonardoai.slack.com/archives/C058JSC5BNF) channel to notify the company of a new release.
 
-## Overview
+## Getting Started
 
-This GitHub Action automatically generates changelogs for pull requests by:
-1. Extracting Jira ticket information from PR descriptions
-2. Fetching detailed ticket information from Jira
-3. Using OpenAI's GPT-4 to generate a concise changelog
-4. Posting or updating the changelog as a comment on the PR
+### Prerequisites
 
-## Setup
+Before you begin, ensure you have met the following requirements:
 
-### Required Action Inputs
+- The Slack Application known as 'Spider Bot' is active and running in the Leonardo.Ai Slack
+- The Slack Application known as 'Spider Bot' has access to send messages in the [#web-releases](https://leonardoai.slack.com/archives/C058JSC5BNF) channel
 
-```yaml
-inputs:
-  github-token:
-    description: 'GitHub token for PR operations'
-    required: true
-  atlassian-base-url:
-    description: 'Atlassian base URL (e.g., https://your-org.atlassian.net)'
-    required: true
-  atlassian-email:
-    description: 'Atlassian account email'
-    required: true
-  atlassian-secret:
-    description: 'Atlassian API token'
-    required: true
-  openai-secret:
-    description: 'OpenAI API key'
-    required: true
-```
+### Installation
 
-### Required Permissions
+1. Make sure 'Access' under this repositories Action settings is set to 'Accessible from repositories in Leonardo-Interactive organization'.
+   <img width="880" alt="image" src="./docs/workflow-access.png">
 
-- Github Token needs:
-  - Issues (read/write)
-  - Pull requests (read/write)
-- Jira API Token needs:
-  - Read issues permission
-- OpenAI API Key needs:
-  - Access to GPT-4 model
+2. Ensure the following secrets are on the [Leonardo Platform](https://github.com/Leonardo-Interactive/leonardo-platform) repository
 
-## Usage
+- `SLACK_WEB_RELEASES_ENDPOINT` - The Slack webhook URL where messages should be sent to
 
-1. Include a Jira ticket reference in your PR description using the format: `[TICKET-123]:`
-2. The action will automatically:
-   - Fetch the Jira ticket details
-   - Generate a changelog using GPT-4
-   - Post the changelog as a comment on the PR
-3. If the changelog needs to be regenerated:
-   - Click the rerun link in the changelog comment
-   - The action will update the existing comment with the new changelog
-
-[Example Workflow](/example/generate-changlog.yaml)
-
-## Development
-
-⚠️ **Important**: This action is written in TypeScript. After making any changes, you must run `npm run build` before committing to ensure the JavaScript files are properly compiled.
+4. Create the following file in your repository at `.github/workflows/document-release.yml` with the following contents: [.github/workflows/document-release.yml](.github/workflows/document-release.yml)

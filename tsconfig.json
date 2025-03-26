@@ -1,12 +1,13 @@
 {
-    "compilerOptions": {
-      "target": "ES2022",
-      "module": "commonjs",
-      "rootDir": "./src",
-      "outDir": "./lib",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true
-    },
-    "exclude": ["node_modules", "**/*.test.ts"]
-  }
+	"compilerOptions": {
+		"outDir": "dist",
+		"lib": ["es2021"],
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"target": "ES6",
+		"removeComments": true,
+		"sourceMap": true
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules"]
+}

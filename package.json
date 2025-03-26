@@ -1,31 +1,19 @@
 {
-  "name": "gh-action-handle-web-changelog-generation",
-  "version": "1.0.0",
-  "description": "Handles creating a changelog via LLM for web PRs",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc && ncc build lib/index.js -o dist",
-    "package": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Leonardo-Interactive/gh-action-handle-web-changelog-generation.git"
-  },
-  "author": "joel@leonardo.ai",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Leonardo-Interactive/gh-action-handle-web-changelog-generation/issues"
-  },
-  "homepage": "https://github.com/Leonardo-Interactive/gh-action-handle-web-changelog-generation#readme",
-  "dependencies": {
-    "@actions/core": "^1.11.1",
-    "@actions/github": "^6.0.0",
-    "dotenv": "^16.4.7",
-    "openai": "^4.87.3"
-  },
-  "devDependencies": {
-    "@types/node": "^22.13.10",
-    "@vercel/ncc": "^0.38.3",
-    "typescript": "^5.8.2"
-  }
+	"name": "github-document-release-slack",
+	"version": "4.0.0",
+	"author": "Liam Pillay",
+	"main": "index.js",
+	"description": "Sends a release message to slack and creates a changelog from a pull request.",
+	"scripts": {
+		"build": "tsc && ncc build src/index.ts"
+	},
+	"dependencies": {
+		"@actions/core": "^1.10.1",
+		"@actions/github": "^6.0.0",
+		"@vercel/ncc": "^0.38.1"
+	},
+	"devDependencies": {
+		"@types/node": "^20.11.5",
+		"typescript": "^5.3.3"
+	}
 }

@@ -1,0 +1,42 @@
+name: 'Send a release notification to Slack'
+description: 'Sends a release notification to the specified Slack channel'
+author: 'Liam Pillay'
+inputs:
+  WEBHOOK_URL:
+    description: 'The Slack webhook URL'
+    required: true
+  GITHUB_TOKEN:
+    description: 'The GitHub token'
+    required: true
+  LAST_RELEASE_VERSION:
+    description: 'The version of the last release'
+    required: true
+  PULL_REQUEST_AUTHOR:
+    description: 'The user (string) who created the pull request or code changes'
+    required: true
+  PULL_REQUEST_ID:
+    description: 'The ID (string) of the pull request that has triggered the release that this workflow is documenting.'
+    required: true
+  PULL_REQUEST_REPOSITORY:
+    description: 'The repository (string) of the pull request that has triggered the release that this workflow is documenting.'
+    required: true
+  RELEASE_MANAGER:
+    description: 'The user (string) who initialized the release. Usually just the person who merged the pull request.'
+    required: true
+  REVIEWS_FILE_PATH:
+    description: 'The pull request reviews filepath. This file should contain the reviews associated with the pull request in JSON format.'
+    required: true
+  RELEASE_EMOJI:
+    description: 'The emoji to use for the release notification'
+    required: false
+outputs:
+  version:
+    description: 'The version of the newly created release'
+  changelog_path:
+    description: 'The path to the newly created changelog file'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+branding:
+  icon: 'slack'
+  color: 'purple'
