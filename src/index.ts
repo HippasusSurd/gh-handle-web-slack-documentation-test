@@ -4,23 +4,15 @@ import { ReviewResponse } from './types.js'
 import { getChangelog, getNewReleaseVersion, parseDescriptionForSlack } from './utils.js'
 import { sendSlackMessage } from './sendSlackMessage.js'
 
-const webhookUrl = getInput('WEBHOOK_URL') || process.env.WEBHOOK_URL // This should be passed in from the GitHub Action
 const pullRequestId = getInput('PULL_REQUEST_ID') || process.env.PULL_REQUEST_ID // This should be passed in from the GitHub Action
 const pullRequestRepository = getInput('PULL_REQUEST_REPOSITORY') || process.env.PULL_REQUEST_REPOSITORY // This should be passed in from the GitHub Action
 const githubToken = getInput('GITHUB_TOKEN') || process.env.GITHUB_TOKEN // This should be passed in from the GitHub Action
 const lastRelease = getInput('LAST_RELEASE_VERSION') || process.env.LAST_RELEASE_VERSION // This should be passed in from the GitHub Action
-const codeAuthor = getInput('PULL_REQUEST_AUTHOR') || process.env.PULL_REQUEST_AUTHOR // This should be passed in from the GitHub Action
-const releaseManager = getInput('RELEASE_MANAGER') || process.env.RELEASE_MANAGER // This should be passed in from the GitHub Action
 const reviewsFilePath = getInput('REVIEWS_FILE_PATH') // This should be passed in from the GitHub Action
 
 const mergedEmoji = getInput('RELEASE_EMOJI') || process.env.RELEASE_EMOJI || '🚀'
-const leonardoJira = `https://leonardoai.atlassian.net/browse/`
 
 // 🤖 Basic checks
-if (!webhookUrl)
-	throw Error(
-		"No WEBHOOK_URL provided. Please ensure you have specified `SLACK_WEB_RELEASES_ENDPOINT` in the GitHub Secrets of your action's repository."
-	)
 if (!githubToken)
 	throw Error(
 		'No github token provided. Please ensure you have passed through the `GITHUB_TOKEN` in the GitHub Action calling this custom action.'
@@ -55,8 +47,8 @@ const run = async () => {
 
 	console.log('New release version', newReleaseVersion)
 	console.log('Changelog:\n', changelog)
-	console.log('Pull request author:', codeAuthor)
-	console.log('Release manager:', releaseManager)
+	// console.log('Pull request author:', codeAuthor)
+	// console.log('Release manager:', releaseManager)
 
 	// Get approvers & review info
 	const reviewsFile = readFileSync(reviewsFilePath)
@@ -64,21 +56,21 @@ const run = async () => {
 	const reviews = JSON.parse(reviewsFile.toString()) as ReviewResponse[]
 	console.log('Got reviews!', reviews)
 	console.log('Checking for approvals ...')
-	const approvers = reviews.filter((review) => review.state === 'APPROVED').map((review) => review.user.login)
-	const approversUnique = [...new Set(approvers)]
+	//const approvers = reviews.filter((review) => review.state === 'APPROVED').map((review) => review.user.login)
+	//const approversUnique = [...new Set(approvers)]
 
-	sendSlackMessage({
-		changelog,
-		version: newReleaseVersion,
-		pullRequestAuthor: codeAuthor,
-		releaseManager,
-		approvers: approversUnique,
-		leonardoJira,
-		webhookUrl,
-		pullRequestId,
-		pullRequestRepository,
-		mergedEmoji,
-	})
+	// sendSlackMessage({
+	// 	changelog,
+	// 	version: newReleaseVersion,
+	// 	pullRequestAuthor: codeAuthor,
+	// 	releaseManager,
+	// 	approvers: approversUnique,
+	// 	leonardoJira,
+	// 	webhookUrl,
+	// 	pullRequestId,
+	// 	pullRequestRepository,
+	// 	mergedEmoji,
+	// })
 	// Log the outputs for the next step
 	setOutput('version', newReleaseVersion)
 	writeFileSync('changelog.md', changelog || '')

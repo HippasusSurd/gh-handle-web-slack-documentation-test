@@ -26,56 +26,56 @@ export const sendSlackMessage = async ({
 	mergedEmoji,
 }: SendSlackMessageProps) => {
 	// Authorship & Management
-	const isReleaseManagerAlsoAuthor = releaseManager === pullRequestAuthor
-	const authorSection = `✍ ${pullRequestAuthor}`
-	const releaseMangerSection = `${mergedEmoji} ${releaseManager}`
-	const authorshipAttribution = isReleaseManagerAlsoAuthor ? authorSection : `${authorSection} ${releaseMangerSection}`
+	// const isReleaseManagerAlsoAuthor = releaseManager === pullRequestAuthor
+	// const authorSection = `✍ ${pullRequestAuthor}`
+	// const releaseMangerSection = `${mergedEmoji} ${releaseManager}`
+	// const authorshipAttribution = isReleaseManagerAlsoAuthor ? authorSection : `${authorSection} ${releaseMangerSection}`
 
-	// Review + Peers
-	let reviewText = '❌👀'
-	if (approvers.length > 0) {
-		reviewText = '✅ ' + approvers.map((approver) => `• ${approver} `).join('')
-	}
+	// // Review + Peers
+	// let reviewText = '❌👀'
+	// if (approvers.length > 0) {
+	// 	reviewText = '✅ ' + approvers.map((approver) => `• ${approver} `).join('')
+	// }
 
-	const attribution = `${authorshipAttribution} ${reviewText}`
+	// const attribution = `${authorshipAttribution} ${reviewText}`
 
-	const pullRequestLink = `https://github.com/${pullRequestRepository}/pull/${pullRequestId}`
+	// const pullRequestLink = `https://github.com/${pullRequestRepository}/pull/${pullRequestId}`
 
-	fetch(webhookUrl, {
-		method: 'POST',
-		headers: {
-			'Content-type': 'application/json',
-		},
-		body: JSON.stringify({
-			blocks: [
-				{
-					type: 'header',
-					text: {
-						type: 'plain_text',
-						text: makeTitle(version),
-						emoji: true,
-					},
-				},
-				{
-					type: 'section',
-					text: {
-						type: 'mrkdwn',
-						text: '_*Attributions [<' + `${pullRequestLink}|#${pullRequestId}` + '>]:*' + attribution + '_',
-					},
-				},
-				{
-					type: 'divider',
-				},
-				{
-					type: 'section',
-					text: {
-						type: 'mrkdwn', // Why would slack abbreviate this 😔
-						text: parseDescriptionForSlack(changelog, leonardoJira),
-					},
-				},
-			],
-		}),
-	})
+	// fetch(webhookUrl, {
+	// 	method: 'POST',
+	// 	headers: {
+	// 		'Content-type': 'application/json',
+	// 	},
+	// 	body: JSON.stringify({
+	// 		blocks: [
+	// 			{
+	// 				type: 'header',
+	// 				text: {
+	// 					type: 'plain_text',
+	// 					text: makeTitle(version),
+	// 					emoji: true,
+	// 				},
+	// 			},
+	// 			{
+	// 				type: 'section',
+	// 				text: {
+	// 					type: 'mrkdwn',
+	// 					text: '_*Attributions [<' + `${pullRequestLink}|#${pullRequestId}` + '>]:*' + attribution + '_',
+	// 				},
+	// 			},
+	// 			{
+	// 				type: 'divider',
+	// 			},
+	// 			{
+	// 				type: 'section',
+	// 				text: {
+	// 					type: 'mrkdwn', // Why would slack abbreviate this 😔
+	// 					text: parseDescriptionForSlack(changelog, leonardoJira),
+	// 				},
+	// 			},
+	// 		],
+	// 	}),
+	// })
 }
 
 const makeTitle = (version: string) => {

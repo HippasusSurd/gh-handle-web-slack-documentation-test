@@ -29217,19 +29217,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const node_fs_1 = __nccwpck_require__(7561);
 const core_1 = __nccwpck_require__(2186);
 const utils_js_1 = __nccwpck_require__(1314);
-const sendSlackMessage_js_1 = __nccwpck_require__(7877);
-const webhookUrl = (0, core_1.getInput)('WEBHOOK_URL') || process.env.WEBHOOK_URL;
 const pullRequestId = (0, core_1.getInput)('PULL_REQUEST_ID') || process.env.PULL_REQUEST_ID;
 const pullRequestRepository = (0, core_1.getInput)('PULL_REQUEST_REPOSITORY') || process.env.PULL_REQUEST_REPOSITORY;
 const githubToken = (0, core_1.getInput)('GITHUB_TOKEN') || process.env.GITHUB_TOKEN;
 const lastRelease = (0, core_1.getInput)('LAST_RELEASE_VERSION') || process.env.LAST_RELEASE_VERSION;
-const codeAuthor = (0, core_1.getInput)('PULL_REQUEST_AUTHOR') || process.env.PULL_REQUEST_AUTHOR;
-const releaseManager = (0, core_1.getInput)('RELEASE_MANAGER') || process.env.RELEASE_MANAGER;
 const reviewsFilePath = (0, core_1.getInput)('REVIEWS_FILE_PATH');
 const mergedEmoji = (0, core_1.getInput)('RELEASE_EMOJI') || process.env.RELEASE_EMOJI || '🚀';
-const leonardoJira = `https://leonardoai.atlassian.net/browse/`;
-if (!webhookUrl)
-    throw Error("No WEBHOOK_URL provided. Please ensure you have specified `SLACK_WEB_RELEASES_ENDPOINT` in the GitHub Secrets of your action's repository.");
 if (!githubToken)
     throw Error('No github token provided. Please ensure you have passed through the `GITHUB_TOKEN` in the GitHub Action calling this custom action.');
 if (!lastRelease)
@@ -29248,104 +29241,16 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     const newReleaseVersion = (0, utils_js_1.getNewReleaseVersion)(lastRelease);
     console.log('New release version', newReleaseVersion);
     console.log('Changelog:\n', changelog);
-    console.log('Pull request author:', codeAuthor);
-    console.log('Release manager:', releaseManager);
     const reviewsFile = (0, node_fs_1.readFileSync)(reviewsFilePath);
     console.log('Got reviews file. Checking for reviews!');
     const reviews = JSON.parse(reviewsFile.toString());
     console.log('Got reviews!', reviews);
     console.log('Checking for approvals ...');
-    const approvers = reviews.filter((review) => review.state === 'APPROVED').map((review) => review.user.login);
-    const approversUnique = [...new Set(approvers)];
-    (0, sendSlackMessage_js_1.sendSlackMessage)({
-        changelog,
-        version: newReleaseVersion,
-        pullRequestAuthor: codeAuthor,
-        releaseManager,
-        approvers: approversUnique,
-        leonardoJira,
-        webhookUrl,
-        pullRequestId,
-        pullRequestRepository,
-        mergedEmoji,
-    });
     (0, core_1.setOutput)('version', newReleaseVersion);
     (0, node_fs_1.writeFileSync)('changelog.md', changelog || '');
     (0, core_1.setOutput)('changelog_path', 'changelog.md');
 });
 run();
-
-
-/***/ }),
-
-/***/ 7877:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sendSlackMessage = void 0;
-const utils_1 = __nccwpck_require__(1314);
-const sendSlackMessage = ({ changelog, version, pullRequestAuthor, releaseManager, approvers, leonardoJira, webhookUrl, pullRequestId, pullRequestRepository, mergedEmoji, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const isReleaseManagerAlsoAuthor = releaseManager === pullRequestAuthor;
-    const authorSection = `✍ ${pullRequestAuthor}`;
-    const releaseMangerSection = `${mergedEmoji} ${releaseManager}`;
-    const authorshipAttribution = isReleaseManagerAlsoAuthor ? authorSection : `${authorSection} ${releaseMangerSection}`;
-    let reviewText = '❌👀';
-    if (approvers.length > 0) {
-        reviewText = '✅ ' + approvers.map((approver) => `• ${approver} `).join('');
-    }
-    const attribution = `${authorshipAttribution} ${reviewText}`;
-    const pullRequestLink = `https://github.com/${pullRequestRepository}/pull/${pullRequestId}`;
-    fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-            'Content-type': 'application/json',
-        },
-        body: JSON.stringify({
-            blocks: [
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: makeTitle(version),
-                        emoji: true,
-                    },
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: '_*Attributions [<' + `${pullRequestLink}|#${pullRequestId}` + '>]:*' + attribution + '_',
-                    },
-                },
-                {
-                    type: 'divider',
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: (0, utils_1.parseDescriptionForSlack)(changelog, leonardoJira),
-                    },
-                },
-            ],
-        }),
-    });
-});
-exports.sendSlackMessage = sendSlackMessage;
-const makeTitle = (version) => {
-    return `Changelog for ${version}`;
-};
 
 
 /***/ }),
