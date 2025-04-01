@@ -30,13 +30,31 @@ export const getChangelog = async (githubToken: string, pullRequestId: string, p
 
 	const changelogComment = comments.data.find((comment) => comment.body?.includes('<!-- automated-changelog -->'))
 
-	if (!changelogComment) {
+	let changelog: string | undefined = undefined
+	if (changelogComment) {
+		changelog = changelogComment.body.split('```')[1]
+	} else {
+		// for backwards compatibility, try to get the changelog from the description in case the comment is not present
+		const pullRequest = await octokit.rest.pulls.get({
+			owner: repoOwner,
+			repo: repoName,
+			pull_number: Number(pullRequestId),
+		})
+
+		const description = pullRequest.data.body
+
+		changelog = description
+			?.match(/```changelog.*```/gs)
+			?.find(Boolean)
+			?.slice(12, -3)
+	}
+
+	if (!changelog) {
 		throw Error(
-			'No changelog comment found. Please ensure you have a comment with the text `<!-- automated-changelog -->` in the pull request.'
+			'No changelog comment found. Please ensure you have a comment with the text `<!-- automated-changelog -->` and a changlog contained in a code block in the comment'
 		)
 	}
 
-	const changelog = changelogComment.body.split('```')[1]
 	return changelog
 }
 
