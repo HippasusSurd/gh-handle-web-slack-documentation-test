@@ -26,6 +26,7 @@ const getNewReleaseVersion = (lastTag) => {
 };
 exports.getNewReleaseVersion = getNewReleaseVersion;
 const getChangelog = (githubToken, pullRequestId, pullRequestRepository) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const octokit = (0, github_1.getOctokit)(githubToken);
     const [repoOwner, repoName] = pullRequestRepository.split('/');
     const comments = yield octokit.rest.issues.listComments({
@@ -34,10 +35,22 @@ const getChangelog = (githubToken, pullRequestId, pullRequestRepository) => __aw
         issue_number: Number(pullRequestId),
     });
     const changelogComment = comments.data.find((comment) => { var _a; return (_a = comment.body) === null || _a === void 0 ? void 0 : _a.includes('<!-- automated-changelog -->'); });
-    if (!changelogComment) {
-        throw Error('No changelog comment found. Please ensure you have a comment with the text `<!-- automated-changelog -->` in the pull request.');
+    let changelog = undefined;
+    if (changelogComment) {
+        changelog = changelogComment.body.split('```')[1];
     }
-    const changelog = changelogComment.body.split('```')[1];
+    else {
+        const pullRequest = yield octokit.rest.pulls.get({
+            owner: repoOwner,
+            repo: repoName,
+            pull_number: Number(pullRequestId),
+        });
+        const description = pullRequest.data.body;
+        changelog = (_b = (_a = description === null || description === void 0 ? void 0 : description.match(/```changelog.*```/gs)) === null || _a === void 0 ? void 0 : _a.find(Boolean)) === null || _b === void 0 ? void 0 : _b.slice(12, -3);
+    }
+    if (!changelog) {
+        throw Error('No changelog comment found. Please ensure you have a comment with the text `<!-- automated-changelog -->` and a changlog contained in a code block in the comment');
+    }
     return changelog;
 });
 exports.getChangelog = getChangelog;
